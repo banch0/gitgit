@@ -1,0 +1,16 @@
+.footer {
+    background: #0d112b;
+    padding: 50px 0;
+    text-align: center;
+    color: #565b73;
+}
+
+.heart {
+    font-weight: normal;
+    animation: crescendo 1s alternate infinite ease-in;
+}
+  
+@keyframes crescendo {
+    0%   {transform: scale(1);}
+    50%  {transform: scale(1.2);}
+}

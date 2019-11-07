@@ -1,0 +1,28 @@
+.home {
+	padding: 20px;
+	min-height: 100%;
+	width: 100%;
+}
+
+.cardHeader {
+  padding: 16px;
+}
+
+.cardBody {
+  padding: 16px;
+}
+
+.quoteCard {
+	background: rgba(0,140,255,.1);
+}
+
+.quoteCardButton {
+    background: #008cff;
+    color: #fff;
+    display: inline-block;
+    padding: 10px 16px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    font-size: 11px;
+    line-height: 1;
+}
