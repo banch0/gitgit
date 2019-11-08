@@ -1,6 +1,5 @@
 import { h, Component } from 'preact';
-import axios from 'axios';
-import style from './style';
+import style from '../style';
 import agent from '../../agent';
 import Quotes from "../../components/quotes";
 import Elevation from 'preact-material-components/Elevation';

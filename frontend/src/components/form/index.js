@@ -8,17 +8,14 @@ import 'preact-material-components/TextField/style.css';
 import 'preact-material-components/Menu/style.css';
 import 'preact-material-components/Select/style.css';
 import 'preact-material-components/Typography/style.css';
-import 'preact-material-components/List/style.css';
 import style from './style';
 import agent from '../../agent';
-import 'preact-material-components/Menu/style.css';
 
 
 export default class FormComponent extends Component {
     componentDidMount = () => {
         this.getAllAuthors();
         this.getAllCategories();
-        console.log(this.ref.current);
     }
 
     async getAllCategories() {
@@ -43,7 +40,6 @@ export default class FormComponent extends Component {
     }
 
     render() {
-        console.log(this.state)
         const { categories, authors } = this.state;
         return (
             <div>

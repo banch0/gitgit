@@ -25,12 +25,12 @@
 }
 
 .quoteCardButton {
-    background: #008cff;
-    color: #fff;
-    display: inline-block;
-    padding: 10px 16px;
-    letter-spacing: .15em;
-    text-transform: uppercase;
-    font-size: 11px;
-    line-height: 1;
+  background: #008cff;
+  color: #fff;
+  display: inline-block;
+  padding: 10px 16px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  font-size: 11px;
+  line-height: 1;
 }

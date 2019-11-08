@@ -9,7 +9,7 @@ import 'preact-material-components/TextField/style.css';
 import 'preact-material-components/Select/style.css';
 import 'preact-material-components/Typography/style.css';
 import 'preact-material-components/Card/style.css';
-import style from './style';
+import style from '../style';
 import agent from '../../agent';
 
 export default class EditComponent extends Component {

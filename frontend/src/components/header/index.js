@@ -1,9 +1,5 @@
 import { h, Component } from 'preact';
 import { Link } from 'preact-router/match';
-import 'preact-material-components/Switch/style.css';
-import 'preact-material-components/Dialog/style.css';
-import 'preact-material-components/List/style.css';
-import 'preact-material-components/TopAppBar/style.css';
 import style from './style';
 
 export default class Header extends Component {

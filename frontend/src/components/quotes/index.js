@@ -1,12 +1,12 @@
 import { h, Component } from 'preact';
 import Card from 'preact-material-components/Card';
-import 'preact-material-components/Card/style.css';
-import 'preact-material-components/Button/style.css';
-import style from './style';
 import Dialog from 'preact-material-components/Dialog';
 import IconButton from 'preact-material-components/IconButton';
+import 'preact-material-components/Card/style.css';
+import 'preact-material-components/Button/style.css';
 import 'preact-material-components/IconButton/style.css';
 import 'preact-material-components/Dialog/style.css';
+import style from './style';
 import agent from '../../agent';
 
 export default class Quotes extends Component {
@@ -15,7 +15,6 @@ export default class Quotes extends Component {
 	}
 
 	render() {
-		console.log(this.props);
 		const { title, id, author, quote } = this.props.unit;
 		return (
 			<div>

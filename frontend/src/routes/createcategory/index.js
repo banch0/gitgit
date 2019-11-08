@@ -1,10 +1,11 @@
 import { h, Component } from 'preact';
-import style from './style';
-import FormComponent from './form'
+import FormComponent from './form';
 import Card from 'preact-material-components/Card';
-import 'preact-material-components/Card/style.css';
 import Typography from 'preact-material-components/Typography';
+import 'preact-material-components/Card/style.css';
 import 'preact-material-components/Typography/style.css';
+import style from '../style';
+
 export default class CreateCategory extends Component {
 
 	render() {
