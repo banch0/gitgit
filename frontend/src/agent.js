@@ -19,9 +19,9 @@ const requests = {
 }
 
 const Categories = {
-    create: categories => requests.post(`/category/create`, categories ),
+    create: categories => requests.post(`/category/create`, categories),
     get: () => requests.get(`/category`),
-    getById: (id) => requests.get(`/category/${id}`),
+    getById: id => requests.get(`/getbycategory/${id}`),
     delete: (id) =>
         requests.del(`/category/${id}`),
     update: (id, categories) =>
@@ -29,9 +29,9 @@ const Categories = {
 }
 
 const Authors = {
-    create: authors => requests.post(`/author/create`, authors ),
+    create: authors => requests.post(`/author/create`, authors),
     get: () => requests.get(`/authors`),
-    getById: (id) => requests.get(`/autthors/${id}`),
+    getById: id => requests.get(`/getbyauthor/${id}`),
     delete: (id) =>
         requests.del(`/authors/${id}`),
     update: (id, authors) =>
@@ -40,13 +40,13 @@ const Authors = {
 
 const Quotes = {
     create: (quotes) => {
-        requests.post(`/quote/create`, quotes )
+        requests.post(`/quote/create`, quotes)
     },
     get: () => requests.get(`/quote/abc`),
     getById: (id) => requests.get(`/quote/${id}`),
     delete: (id) =>
         requests.del(`/quote/${id}`),
-    update: (id, quotes ) =>
+    update: (id, quotes) =>
         requests.put(`/quote/${id}`, { quotes })
 }
 

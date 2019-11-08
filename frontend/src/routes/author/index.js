@@ -1,19 +1,28 @@
 import { h, Component } from 'preact';
-//import style from './style';
-import FormComponent from '../../components/form'
-import Card from 'preact-material-components/Card';
+import style from '../style';
+import agent from '../../agent';
+import Quotes from "../../components/quotes";
 import 'preact-material-components/Card/style.css';
 
-export default class Category extends Component {
-	//by author searhc page
+export default class Author extends Component {
+	componentDidMount = () => {
+		this.getByAuthors();
+	}
 
-	render({ user }, { time, count }) {
+	async getByAuthors() {
+		const quotes = await agent.Authors.getById(this.props.id);
+		this.setState({ quotes });
+	}
+
+	render(props) {
+		const { quotes } = this.state
+		console.log(this.state)
 		return (
-			<div class={` page`}>
-                <h2>by author</h2>
-				<Card style={{margin: 25, padding: '30px 24px 15px 30px'}}>
-					<div>{/*<FormComponent /> */}</div>
-				</Card>
+			<div class={`${style.profile} page`}>
+				<div style={{ textAlign: 'center' }}>
+					<h1>By Author</h1>
+				</div>
+				{quotes !== undefined && quotes.map((m) => <Quotes unit={m} />)}
 			</div>
 		);
 	}

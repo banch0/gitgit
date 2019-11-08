@@ -28,6 +28,11 @@ export default class FormComponent extends Component {
         this.setState({ authors });
     }
 
+    componentWillUnmount = () => {
+        console.log("unmount")
+        this.setState({ author: null, category: null})
+    }
+    
     async createQ() {
         let myObject = {
             author: this.state.author,

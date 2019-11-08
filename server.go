@@ -54,7 +54,7 @@ func init() {
 }
 
 // GetByCategory ...
-func GetByCategory(category string) (quotes []*Quote, err error) {
+func GetByCategory(category int) (quotes []*Quote, err error) {
 	rows, err := Db.Query("select * from quotes where category_id = $1", category)
 	if err != nil {
 		log.Fatal(err)
@@ -63,7 +63,7 @@ func GetByCategory(category string) (quotes []*Quote, err error) {
 
 	for rows.Next() {
 		quote := &Quote{}
-		err = rows.Scan(&quote.ID)
+		err = rows.Scan(&quote.ID, &quote.Quote, &quote.Author, &quote.Category, &quote.CategoryID, &quote.AuthorID, &quote.CreatedAt)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -74,7 +74,7 @@ func GetByCategory(category string) (quotes []*Quote, err error) {
 }
 
 // GetByAuthor ...
-func GetByAuthor(author string) (quotes []*Quote, err error) {
+func GetByAuthor(author int) (quotes []*Quote, err error) {
 	rows, err := Db.Query("select * from quotes where author_id = $1", author)
 	if err != nil {
 		log.Fatal(err)
@@ -83,7 +83,7 @@ func GetByAuthor(author string) (quotes []*Quote, err error) {
 
 	for rows.Next() {
 		quote := &Quote{}
-		err = rows.Scan(&quote.ID)
+		err = rows.Scan(&quote.ID, &quote.Quote, &quote.Author, &quote.Category, &quote.CategoryID, &quote.AuthorID, &quote.CreatedAt)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -107,7 +107,6 @@ func GetQuoteByID(id int) (quote *Quote, err error) {
 
 // GetAllQuotes ...
 func GetAllQuotes() (quotes []*Quote, err error) {
-
 	rows, err := Db.Query("select id, quote, author, category, category_id, author_id from quotes")
 	if err != nil {
 		log.Fatal(err)
@@ -291,9 +290,10 @@ func main() {
 	router := newPathResolver()
 	router.Set("api")
 	router.Add("(GET|POST|PUT|DELETE|OPTIONS) /quote(/?[0-9]*)?", handleRequest)
-	router.Add("(GET|POST|DELETE|OPTIONS) /author(/?[A-Za-z]*)?", handleRequestAuthor)
-	router.Add("(GET|POST|DELETE|OPTIONS) /category(/?[A-Za-z]*)?", handleRequestCategory)
-
+	router.Add("(GET|POST|OPTIONS) /author(/?[A-Za-z]*)?", handleRequestAuthor)
+	router.Add("(GET|POST|OPTIONS) /category(/?[A-Za-z]*)?", handleRequestCategory)
+	router.Add("(GET|OPTIONS) /getbyauthor(/?[0-9]*)?", byAuthorReq)
+	router.Add("(GET|OPTIONS) /getbycategory(/?[0-9]*)?", byCategoryReq)
 	http.ListenAndServe(":8081", router)
 }
 
@@ -449,6 +449,60 @@ func getOnebyId(res http.ResponseWriter, req *http.Request) (err error) {
 	_, err = GetQuoteByID(id)
 	if err != nil {
 		log.Fatal(err)
+	}
+	return
+}
+
+func byCategoryReq(res http.ResponseWriter, req *http.Request) {
+	setupResponse(&res, req)
+	if req.Method == "OPTIONS" {
+		res.WriteHeader(200)
+		return
+	}
+	id, err := strconv.Atoi(path.Base(req.URL.Path))
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	switch req.Method {
+	case "GET":
+		log.Println(id)
+		post, err := GetByCategory(id)
+		if err != nil {
+			log.Println(err)
+		}
+		log.Println(post)
+		json.NewEncoder(res).Encode(post)
+		if err != nil {
+			panic(err)
+		}
+	}
+	return
+}
+
+func byAuthorReq(res http.ResponseWriter, req *http.Request) {
+	setupResponse(&res, req)
+	if req.Method == "OPTIONS" {
+		res.WriteHeader(200)
+		return
+	}
+	id, err := strconv.Atoi(path.Base(req.URL.Path))
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	switch req.Method {
+	case "GET":
+		log.Println(id)
+		post, err := GetByAuthor(id)
+		if err != nil {
+			log.Println(err)
+		}
+		log.Println(post)
+		json.NewEncoder(res).Encode(post)
+		if err != nil {
+			panic(err)
+		}
 	}
 	return
 }

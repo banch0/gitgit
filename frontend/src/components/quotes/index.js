@@ -15,13 +15,14 @@ export default class Quotes extends Component {
 	}
 
 	render() {
-		const { title, id, author, quote } = this.props.unit;
+		const { category, id, author, quote, author_id } = this.props.unit;
+		console.log(this.props.unit)
 		return (
 			<div>
 				<Card style={{ margin: 25 }} class={style.quoteCard}>
 					<div class={style.cardHeader}>
-						<h2 class=" mdc-typography--title">{author}</h2>
-						<div class=" mdc-typography--caption">{title}</div>
+						<h2 class=" mdc-typography--title">{category}</h2>
+						<div class=" mdc-typography--caption">{author}</div>
 					</div>
 					<div class={style.cardBody}>
 						{quote}
