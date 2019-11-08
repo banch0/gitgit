@@ -6,7 +6,6 @@ import 'preact-material-components/Card/style.css';
 import agent from '../../agent'
 
 export default class Category extends Component {
-	// gets called when this route is navigated to
 	componentDidMount() {
 		this.getAllAuthors();
 		this.getAllCategories();
@@ -20,9 +19,7 @@ export default class Category extends Component {
 		const categories = await agent.Categories.get();
 		this.setState({ categories });
 	}
-	// Note: `user` comes from the URL, courtesy of our router
-	render({ user }, { time, count }) {
-		console.log(user);
+	render() {
 		console.log(this.state);
 		return (
 			<div class={`${style.profile} page`}>

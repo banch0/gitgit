@@ -3,12 +3,11 @@ import Typography from 'preact-material-components/Typography';
 import Select from 'preact-material-components/Select';
 import TextField from 'preact-material-components/TextField';
 import Button from 'preact-material-components/Button';
+import Card from 'preact-material-components/Card';
 import 'preact-material-components/Button/style.css';
 import 'preact-material-components/TextField/style.css';
-import 'preact-material-components/Menu/style.css';
 import 'preact-material-components/Select/style.css';
 import 'preact-material-components/Typography/style.css';
-import Card from 'preact-material-components/Card';
 import 'preact-material-components/Card/style.css';
 import style from './style';
 import agent from '../../agent';
@@ -46,17 +45,14 @@ export default class EditComponent extends Component {
 
 
     render(props) {
-        console.log(props.id);
-        console.log(this.state);
         const { categories, authors } = this.state;
         return (
         <div class={`${style.profile} page`}>
-            <div style={{textAlign: 'center'}}><Typography headline3>Цитатник</Typography></div>
+            <div style={{textAlign: 'center'}}><Typography headline3>Quotes</Typography></div>
 				<Card style={{ margin: 25, padding: '30px 24px 15px 30px' }}>
                 <div style={{ marginTop: 16 }} class={style.customForm}>
-                    {/* <TextField label="Автор" outlined value={this.state.author}
-                        onInput={e => this.setState({ author: e.target.value })} /> */}
-                    <Select outlined hintText="Выберите категорию"
+
+                    <Select outlined hintText="Authors"
                         selectedIndex={this.state.author_id}
                         value={this.state.author}
                         onChange={(e) => {
@@ -66,15 +62,16 @@ export default class EditComponent extends Component {
                             });
                         }}>
                         {authors !== undefined && authors.map((i) => (
-                            <Select.Item>author + {i}</Select.Item>
+                            <Select.Item>{i.fullname}</Select.Item>
                         ))}
                     </Select>
+
                     <hr class="mdc-list-divider" style={{ margin: 24 }} />
-                    <TextField textarea={true} label="Введите цитату" value={this.state.quote === '' ? this.state.oneQuote : this.state.quote}
+                    <TextField textarea={true} label="Enter the quote" value={this.state.quote === '' ? this.state.oneQuote.quote : this.state.quote}
                         onInput={e => this.setState({ quote: e.target.value })} />
 
                     <hr class="mdc-list-divider" style={{ margin: 24 }} />
-                    <Select outlined hintText="Выберите категорию"
+                    <Select outlined hintText="Category"
                         selectedIndex={this.state.catIndex}
                         value={this.state.category}
                         onChange={(e) => {
@@ -84,11 +81,10 @@ export default class EditComponent extends Component {
                             });
                         }}>
                         {categories !== undefined && categories.map((i) => (
-                            <Select.Item>opt + {i}</Select.Item>
+                            <Select.Item>{i.title}</Select.Item>
                         ))}
                     </Select>
                 </div>
-                <div id="output"></div>
                 <p>
                 <Button style={{ background: '#008cff', fontSize: 19, height: 62 }}
                         raised ripple onClick={() => this.createQ()}>Добавить</Button>

@@ -11,7 +11,6 @@ import agent from '../../agent';
 
 export default class Quotes extends Component {
 	async deleteQuote(id) {
-		console.log(id);
 		await agent.Quotes.delete(id);
 	}
 

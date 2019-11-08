@@ -27,13 +27,13 @@ type Quote struct {
 // Author of content
 type Author struct {
 	ID       int    `json:"id"`
-	Fullname string `json:"name"`
+	Fullname string `json:"fullname"`
 }
 
 // Category of quotes
 type Category struct {
 	ID    int    `json:"id"`
-	Title string `json:"content"`
+	Title string `json:"title"`
 }
 
 var quote *Quote
@@ -94,14 +94,20 @@ func GetByAuthor(author string) (quotes []*Quote, err error) {
 
 // GetQuoteByID ...
 func GetQuoteByID(id int) (quote *Quote, err error) {
+	log.Println("get by id")
 	quote = &Quote{}
 	err = Db.QueryRow("select id, quote, author, category, category_id, author_id from quotes where id = $1",
-		id).Scan(&quote.ID, &quote.Quote)
-	return
+		id).Scan(&quote.ID, &quote.Quote, &quote.Author, &quote.Category, &quote.CategoryID, &quote.AuthorID)
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println(quote.Quote)
+	return quote, nil
 }
 
 // GetAllQuotes ...
 func GetAllQuotes() (quotes []*Quote, err error) {
+
 	rows, err := Db.Query("select id, quote, author, category, category_id, author_id from quotes")
 	if err != nil {
 		log.Fatal(err)
@@ -191,6 +197,7 @@ func (quote *Quote) Update() (err error) {
 
 // Delete ...
 func (quote *Quote) Delete() (err error) {
+	log.Println(quote.ID)
 	_, err = Db.Exec("delete from quotes where id = $1", quote.ID)
 	return
 }
@@ -262,15 +269,19 @@ func handlePut(w http.ResponseWriter, r *http.Request) (err error) {
 
 func handleDelete(w http.ResponseWriter, r *http.Request) (err error) {
 	id, err := strconv.Atoi(path.Base(r.URL.Path))
+	log.Println(id)
 	if err != nil {
 		return
 	}
 	post, err := GetQuoteByID(id)
+	log.Println(post.ID)
 	if err != nil {
+		log.Println(err)
 		return
 	}
 	err = post.Delete()
 	if err != nil {
+		log.Println(err)
 		return
 	}
 	return
@@ -357,6 +368,7 @@ func handlePost(res http.ResponseWriter, req *http.Request) (err error) {
 	log.Println(quote)
 	err = quote.Create()
 	if err != nil {
+		println("err: ", err)
 		return
 	}
 	return
@@ -364,14 +376,17 @@ func handlePost(res http.ResponseWriter, req *http.Request) (err error) {
 
 func createAuthor(res http.ResponseWriter, req *http.Request) (err error) {
 	var author Author
-	author.ID = 33
 	len := req.ContentLength
 	body := make([]byte, len)
 	req.Body.Read(body)
-	json.Unmarshal(body, &author)
-	log.Println(author)
+	err = json.Unmarshal(body, &author)
+	if err != nil {
+		println("err: ", err.Error())
+		return
+	}
 	err = author.Create()
 	if err != nil {
+		println("err: ", err.Error())
 		return
 	}
 	return
@@ -381,7 +396,11 @@ func createCategory(res http.ResponseWriter, req *http.Request) (err error) {
 	len := req.ContentLength
 	body := make([]byte, len)
 	req.Body.Read(body)
-	json.Unmarshal(body, &category)
+	err = json.Unmarshal(body, &category)
+	if err != nil {
+		println("err: ", err.Error())
+		return
+	}
 	err = category.Create()
 	if err != nil {
 		return

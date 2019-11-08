@@ -3,10 +3,7 @@ import TextField from 'preact-material-components/TextField';
 import Button from 'preact-material-components/Button';
 import 'preact-material-components/Button/style.css';
 import 'preact-material-components/TextField/style.css';
-import 'preact-material-components/Menu/style.css';
-import 'preact-material-components/Select/style.css';
 import style from './style';
-const axios = require('axios');
 import agent from '../../agent';
 
 export default class FormComponent extends Component {
@@ -18,14 +15,10 @@ export default class FormComponent extends Component {
 		this.setState({ authors });
     }
     async createAuthor() {
-        //console.log(author);
-        console.log(this.state.author);
-        console.log("this.stae")
         await agent.Authors.create({ fullname: this.state.author })
     }
 
     render() {
-        console.log(this.state);
         return (
             <div>
                 <div style={{ marginTop: 16 }} class={style.customForm}>
