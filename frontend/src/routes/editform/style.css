@@ -1,0 +1,51 @@
+.home {
+	padding: 20px;
+	min-height: 100%;
+	width: 100%;
+}
+
+.cardHeader {
+  padding: 16px;
+}
+
+.cardBody {
+  padding: 16px;
+}
+
+.mdc-button:not(:disabled) {
+    color: #ee0000!important;
+}
+
+.myButton {
+	color: #ee0000!important;
+}
+
+.quoteCard {
+	background: rgba(0,140,255,.1);
+}
+
+.quoteCardButton {
+    background: #008cff;
+    color: #fff;
+    display: inline-block;
+    padding: 10px 16px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    font-size: 11px;
+    line-height: 1;
+}
+.mdc-form-field {
+  display: grid!important;
+}
+
+.customForm {
+  display: grid;
+  width: 50vw;
+}
+
+.profile {
+	padding: 56px 20px;
+	min-height: 100%;
+	width: 100%;
+	background: #f2f2f2;
+}

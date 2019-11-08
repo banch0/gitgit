@@ -36,7 +36,7 @@ export default class App extends Component {
 					<ByCategory path="/category/:id" />
 					<CreateAuthor path="/createauthor" />
 					<CreateCategory path="/createcategory" />
-					<EditComponent path="/editquote/:id" />
+					<EditComponent  path="/editquote/:id" />
 					<NotFound default />
 				</Router>
 				<Footer />

@@ -18,6 +18,7 @@ export default class Header extends Component {
 	componentDidMount = () => {
 		console.log('did mount')
 	}
+	
 	openDrawer = () => (this.drawer.MDComponent.open = true);
 
 	openSettings = () => this.dialog.MDComponent.show();
@@ -57,8 +58,8 @@ export default class Header extends Component {
 					<h1>Quote of the day</h1>
 					<nav>
 						<Link activeClassName={style.active} href="/">All quotes</Link>
-						<Link activeClassName={style.active} href={`/category/${"name-of-category"}`}>Category</Link>
-						<Link activeClassName={style.active} href={`/author/${"name-of-author"}`}>Authors</Link>
+						<Link activeClassName={style.active} href={`/createcategory`}>Category</Link>
+						<Link activeClassName={style.active} href={`/createauthor`}>Authors</Link>
 					</nav>
 				</header>
 			<RandomQuotes />

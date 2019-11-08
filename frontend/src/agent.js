@@ -19,39 +19,35 @@ const requests = {
 }
 
 const Categories = {
-    create: (categories) => {
-        requests.post(`/categories`, categories)
-    },
+    create: categories => requests.post(`/category/create`, categories ),
     get: () => requests.get(`/category`),
-    getById: () => requests.get(`/categories/${id}`),
+    getById: (id) => requests.get(`/category/${id}`),
     delete: (id) =>
-        requests.del(`/categories/${id}`),
+        requests.del(`/category/${id}`),
     update: (id, categories) =>
-        requests.put(`/categories/${id}`, { categories })
+        requests.put(`/category/${id}`, { categories })
 }
 
 const Authors = {
-    create: (authors) => {
-        requests.post(`/authors/`, authors)
-    },
+    create: authors => requests.post(`/author/create`, authors ),
     get: () => requests.get(`/authors`),
     getById: (id) => requests.get(`/autthors/${id}`),
     delete: (id) =>
         requests.del(`/authors/${id}`),
-    update: (id, categories) =>
+    update: (id, authors) =>
         requests.put(`/authors/${id}`, { authors })
 }
 
 const Quotes = {
     create: (quotes) => {
-        requests.post(`/quotes`, quotes)
+        requests.post(`/quote/create`, quotes )
     },
     get: () => requests.get(`/quote/abc`),
-    getById: (id) => requests.get(`/quotes/${id}`),
+    getById: (id) => requests.get(`/quote/${id}`),
     delete: (id) =>
-        requests.del(`/quotes/${id}`),
-    update: (id, categories) =>
-        requests.put(`/quotes/${id}`, { quotes })
+        requests.del(`/quote/${id}`),
+    update: (id, quotes ) =>
+        requests.put(`/quote/${id}`, { quotes })
 }
 
 export default {

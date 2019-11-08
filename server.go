@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"log"
-	"math/rand"
 	"net/http"
 	"path"
 	"regexp"
@@ -27,14 +26,14 @@ type Quote struct {
 
 // Author of content
 type Author struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID       int    `json:"id"`
+	Fullname string `json:"name"`
 }
 
 // Category of quotes
 type Category struct {
-	ID      int    `json:"id"`
-	Content string `json:"content"`
+	ID    int    `json:"id"`
+	Title string `json:"content"`
 }
 
 var quote *Quote
@@ -54,14 +53,44 @@ func init() {
 	}
 }
 
-// // GetByCategory ...
-// func GetByCategory(category string) (quote *Quote, err error) {}
+// GetByCategory ...
+func GetByCategory(category string) (quotes []*Quote, err error) {
+	rows, err := Db.Query("select * from quotes where category_id = $1", category)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
 
-// // GetByAuthor ...
-// func GetByAuthor(category string) (quote *Quote, err error) {
-// 	log.Println(category)
-// 	err = Db.Query("select * from quotes where category_id = $1", category).Scan(category)
-// }
+	for rows.Next() {
+		quote := &Quote{}
+		err = rows.Scan(&quote.ID)
+		if err != nil {
+			log.Fatal(err)
+		}
+		quotes = append(quotes, quote)
+	}
+	return
+
+}
+
+// GetByAuthor ...
+func GetByAuthor(author string) (quotes []*Quote, err error) {
+	rows, err := Db.Query("select * from quotes where author_id = $1", author)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		quote := &Quote{}
+		err = rows.Scan(&quote.ID)
+		if err != nil {
+			log.Fatal(err)
+		}
+		quotes = append(quotes, quote)
+	}
+	return
+}
 
 // GetQuoteByID ...
 func GetQuoteByID(id int) (quote *Quote, err error) {
@@ -100,7 +129,7 @@ func GetAllAuthors() (authors []*Author, err error) {
 
 	for rows.Next() {
 		author := &Author{}
-		err = rows.Scan(&author.ID, &author.Name)
+		err = rows.Scan(&author.ID, &author.Fullname)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -119,7 +148,7 @@ func GetAllCategory() (categories []*Category, err error) {
 
 	for rows.Next() {
 		var category = &Category{}
-		err = rows.Scan(&category.ID, &category.Content)
+		err = rows.Scan(&category.ID, &category.Title)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -144,23 +173,19 @@ func (quote *Quote) Create() (err error) {
 
 // Create author
 func (author *Author) Create() (err error) {
-	log.Println(author.Name)
-
-	_, err = Db.Exec("insert into author (fullname) values ($1) returning id", author.Name)
+	_, err = Db.Exec("insert into author (fullname) values ($1) returning id", author.Fullname)
 	return
 }
 
 // Create category
 func (category *Category) Create() (err error) {
-	println(category.Content)
-	_, err = Db.Exec("insert into category (title) values ($1) returning id", category.Content)
+	_, err = Db.Exec("insert into category (title) values ($1) returning id", category.Title)
 	return
 }
 
 // Update ...
 func (quote *Quote) Update() (err error) {
-	_, err = Db.Exec("update quotes set content = $2, author = $3 where id = $1", quote.ID, quote.Quote) // quote.Author
-
+	_, err = Db.Exec("update quotes set content = $2, author = $3, author_id = $4, category = $5, category_id = $6, where id = $1", quote.ID, quote.Quote, quote.Author, quote.AuthorID, quote.Category, quote.CategoryID)
 	return
 }
 
@@ -192,18 +217,8 @@ func (r *regexpResolver) Add(regex string, handler http.HandlerFunc) {
 }
 
 func (r *regexpResolver) Set(api string) {
-	// r.api = api
+	r.api = api
 	log.Println(api)
-}
-
-// Middleware ...
-func Middleware(handler http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println("Executing middleware before request phase!")
-		// Pass control back to the handler
-		//handler.ServeHTTP(w, r)
-		log.Println("Executing middleware after response phase!")
-	})
 }
 
 func setupResponse(w *http.ResponseWriter, req *http.Request) {
@@ -223,30 +238,6 @@ func (r *regexpResolver) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 	http.NotFound(res, req)
-}
-
-// CORSMiddle ...
-func CORSMiddle(handler regexpResolver) http.HandlerFunc {
-	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		log.Println("CORS MIDDLEWARE")
-		req.Header.Set("Access-Control-Allow-Origin", "http://localhost:8080")
-		handler.ServeHTTP(res, req)
-	})
-}
-
-func handlePost(res http.ResponseWriter, req *http.Request) (err error) {
-	var quote Quote
-	quote.CreatedAt = time.Now()
-	len := req.ContentLength
-	body := make([]byte, len)
-	req.Body.Read(body)
-	json.Unmarshal(body, &quote)
-	log.Println(quote)
-	err = quote.Create()
-	if err != nil {
-		return
-	}
-	return
 }
 
 func handlePut(w http.ResponseWriter, r *http.Request) (err error) {
@@ -288,7 +279,6 @@ func handleDelete(w http.ResponseWriter, r *http.Request) (err error) {
 func main() {
 	router := newPathResolver()
 	router.Set("api")
-	router.Add("GET /quotes", getall)
 	router.Add("(GET|POST|PUT|DELETE|OPTIONS) /quote(/?[0-9]*)?", handleRequest)
 	router.Add("(GET|POST|DELETE|OPTIONS) /author(/?[A-Za-z]*)?", handleRequestAuthor)
 	router.Add("(GET|POST|DELETE|OPTIONS) /category(/?[A-Za-z]*)?", handleRequestCategory)
@@ -357,33 +347,41 @@ func handleRequestCategory(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func createAuthor(res http.ResponseWriter, req *http.Request) (err error) {
+func handlePost(res http.ResponseWriter, req *http.Request) (err error) {
+	var quote Quote
+	quote.CreatedAt = time.Now()
 	len := req.ContentLength
 	body := make([]byte, len)
-
-	// b, err := ioutil.ReadAll(req.Body)
-	// defer req.Body.Close()
-	// log.Println(b)
-
 	req.Body.Read(body)
+	json.Unmarshal(body, &quote)
+	log.Println(quote)
+	err = quote.Create()
+	if err != nil {
+		return
+	}
+	return
+}
 
+func createAuthor(res http.ResponseWriter, req *http.Request) (err error) {
+	var author Author
+	author.ID = 33
+	len := req.ContentLength
+	body := make([]byte, len)
+	req.Body.Read(body)
 	json.Unmarshal(body, &author)
-
+	log.Println(author)
 	err = author.Create()
 	if err != nil {
 		return
 	}
-
 	return
 }
 
 func createCategory(res http.ResponseWriter, req *http.Request) (err error) {
 	len := req.ContentLength
 	body := make([]byte, len)
-
 	req.Body.Read(body)
 	json.Unmarshal(body, &category)
-
 	err = category.Create()
 	if err != nil {
 		return
@@ -417,21 +415,15 @@ func handleGet(res http.ResponseWriter, req *http.Request) (err error) {
 	if err != nil {
 		return
 	}
-
 	json.NewEncoder(res).Encode(quote)
 	if err != nil {
 		panic(err)
 	}
-	// _, err = json.MarshalIndent(&quote, "", "\t\t")
-	// if err != nil {
-	// 	return
-	// }
 	return
 }
 
 func getOnebyId(res http.ResponseWriter, req *http.Request) (err error) {
 	id, err := strconv.Atoi(path.Base(req.URL.Path))
-
 	if err != nil {
 		return
 	}
@@ -440,18 +432,4 @@ func getOnebyId(res http.ResponseWriter, req *http.Request) (err error) {
 		log.Fatal(err)
 	}
 	return
-}
-
-var allData []Quote
-
-func getall(res http.ResponseWriter, req *http.Request) {
-	random := rand.Intn(len(allData))
-	res.Header().Set("Content-Type", "application/json")
-	for index, item := range allData {
-		if index == random {
-			json.NewEncoder(res).Encode(item)
-			return
-		}
-	}
-	json.NewEncoder(res).Encode(&Quote{})
 }

@@ -10,34 +10,22 @@ import 'preact-material-components/List/style.css';
 import 'preact-material-components/Elevation/style.css';
 
 export default class Home extends Component {
-	GetAllQuotes = () => {
-        axios.get('http://localhost:8081/quote/abb')
-            .then(function (res) {
-				console.log(JSON.stringify(res.data))
-            })
-            .catch(function (err) {
-                console.log(err.message)
-            });
-	}
-
 	componentDidMount = () => {
-		this.GetAllQuotes()
-		this.getQuotes()
+		this.getQuotes();
 
 	}
 	async getQuotes(){
-		const datas = await agent.Quotes.get()
-		this.setState({quotes:datas})
-		console.log(this.state)
+		const datas = await agent.Quotes.get();
+		this.setState({ quotes: datas });
+		console.log(this.state);
 	}
 
 	render() {
+		const { quotes } = this.state;
 		return (
 			<div class={`${style.home} page`}>
 				<CategoryGridPage />
-				{[1, 2, 3, 4, 5].map(() => {
-					return <Quotes data={this.state.quotes}/>
-				})}
+				{quotes !== undefined && quotes.map((m) => <Quotes unit={m} />)}
 
 			</div>
 		);

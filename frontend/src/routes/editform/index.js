@@ -8,40 +8,69 @@ import 'preact-material-components/TextField/style.css';
 import 'preact-material-components/Menu/style.css';
 import 'preact-material-components/Select/style.css';
 import 'preact-material-components/Typography/style.css';
+import Card from 'preact-material-components/Card';
+import 'preact-material-components/Card/style.css';
 import style from './style';
-const axios = require('axios');
+import agent from '../../agent';
 
 export default class EditComponent extends Component {
     componentDidMount = () => {
-        this.getData(id)
+        this.getQuoteById();
+        this.getAllAuthors();
+        this.getAllCategories();
+    }
+    async getAllCategories(){
+		const categories = await agent.Categories.get();
+		this.setState({ categories });
     }
 
-    getData = () => {
-        var error = document.getElementById('error');
+    async getAllAuthors(){
+		const authors = await agent.Authors.get();
+		this.setState({ authors });
+    }
+    async getQuoteById(){
+        const oneQuote = await agent.Quotes.getById(this.props.id);
+		this.setState({ oneQuote });
+    }
 
-        axios.get('http://localhost:8081/')
-            .then(function (res) {
-                error.className = 'container';
-                error.innerHTML = res.data;
-            })
-            .catch(function (err) {
-                error.className = 'container text-danger';
-                error.innerHTML = err.message;
-            });
+    async createQ(){
+        let myObject = {
+            author: this.state.author  === '' ? this.state.oneQuote.author : this.state.author,
+            category: this.state.category === '' ? this.state.oneQuote.category : this.state.category,
+            quote: this.state.quote === '' ? this.state.oneQuote.quote : this.state.quote,
+            category_id: this.state.categoryId === '' ? this.state.oneQuote.category_id : this.state.categoryId,
+            author_id: this.state.author_id === '' ? this.state.oneQuote.author_id : this.state.author_id
+        };
+        await agent.Quotes.update(this.props.id, myObject);
     }
 
 
-    render() {
-        console.log(this.state)
+    render(props) {
+        console.log(props.id);
+        console.log(this.state);
+        const { categories, authors } = this.state;
         return (
-            <div>
-                <div><Typography headline3>Цытатник</Typography></div>
+        <div class={`${style.profile} page`}>
+            <div style={{textAlign: 'center'}}><Typography headline3>Цитатник</Typography></div>
+				<Card style={{ margin: 25, padding: '30px 24px 15px 30px' }}>
                 <div style={{ marginTop: 16 }} class={style.customForm}>
-                    <TextField label="Автор" outlined value={this.state.author}
-                        onInput={e => this.setState({ author: e.target.value })} />
-
+                    {/* <TextField label="Автор" outlined value={this.state.author}
+                        onInput={e => this.setState({ author: e.target.value })} /> */}
+                    <Select outlined hintText="Выберите категорию"
+                        selectedIndex={this.state.author_id}
+                        value={this.state.author}
+                        onChange={(e) => {
+                            this.setState({
+                                author_id: e.target.selectedIndex,
+                                author: e.target.value
+                            });
+                        }}>
+                        {authors !== undefined && authors.map((i) => (
+                            <Select.Item>author + {i}</Select.Item>
+                        ))}
+                    </Select>
                     <hr class="mdc-list-divider" style={{ margin: 24 }} />
-                    <TextField textarea={true} label="Введите цытату" value={this.state.quote}
+                    <TextField textarea={true} label="Введите цитату" value={this.state.quote === '' ? this.state.oneQuote : this.state.quote}
                         onInput={e => this.setState({ quote: e.target.value })} />
 
                     <hr class="mdc-list-divider" style={{ margin: 24 }} />
@@ -54,17 +83,18 @@ export default class EditComponent extends Component {
                                 category: e.target.value
                             });
                         }}>
-                        {[1, 2, 3, 4, 55, 6].map((i) => (
+                        {categories !== undefined && categories.map((i) => (
                             <Select.Item>opt + {i}</Select.Item>
                         ))}
                     </Select>
                 </div>
                 <div id="output"></div>
                 <p>
-                    <Button style={{ background: '#008cff', fontSize: 19, height: 62 }}
-                        raised ripple onClick={this.createQuote}>Добавить</Button>
+                <Button style={{ background: '#008cff', fontSize: 19, height: 62 }}
+                        raised ripple onClick={() => this.createQ()}>Добавить</Button>
                 </p>
-            </div>
+				</Card>
+			</div>
         )
     }
 }

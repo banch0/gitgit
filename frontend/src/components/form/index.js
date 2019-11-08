@@ -9,85 +9,57 @@ import 'preact-material-components/Menu/style.css';
 import 'preact-material-components/Select/style.css';
 import 'preact-material-components/Typography/style.css';
 import style from './style';
-const axios = require('axios');
-import agent from '../../agent'
-
-// imagesDelete = (img) => {
-//     try {
-//         if (!img.name) {
-//             return this.props.removeImages(img)
-//         } else {
-//             this.props.removeImages(img.name)
-//         }
-//     } catch (e) {
-//         console.log(e.message)
-//     }
-// }
+import agent from '../../agent';
 
 export default class FormComponent extends Component {
     componentDidMount = () => {
-        this.GetAllAuthors()
-        // this.GetAllCategory()
-        this.submit()
+        this.getAllAuthors();
+        this.getAllCategories();
     }
-    async submit() {
-        const { email, password } = this.state
-        const promise = await agent.Categories.get()
-        console.log("primise:", promise)
-        //this.props.onSubmit(promise)
-    
-      }
-    
-    // GetAllCategory = () => {
-    //     axios.get('http://localhost:8081/category/faf')
-    //         .then(function (res) {
-    //             console.log(res)
-	// 			console.log(JSON.stringify(res.data))
-    //         })
-    //         .catch(function (err) {
-    //             console.log(err.message)
-    //         });
-    // }
-    
-    GetAllAuthors = () => {
-        axios.get('http://localhost:8081/author/aff')
-            .then(function (res) {
-				console.log(JSON.stringify(res.data))
-            })
-            .catch(function (err) {
-                console.log(err.message)
-            });
+
+    async getAllCategories(){
+		const categories = await agent.Categories.get();
+		this.setState({ categories });
     }
-    
-    createQuote = () => {
-        var output = document.getElementById('output');
+
+    async getAllAuthors(){
+		const authors = await agent.Authors.get();
+		this.setState({ authors });
+    }
+
+    async createQ(){
         let myObject = {
             author: this.state.author,
             category: this.state.category,
             quote: this.state.quote,
-            category_id: 3,
-            author_id: 3,
-        }
-        axios.post('http://localhost:8081/quote/abc', myObject)
-            .then(function (res) {
-                output.className = 'container';
-                output.innerHTML = res.data;
-            })
-            .catch(function (err) {
-                output.className = 'container text-danger';
-                output.innerHTML = err.message;
-            });
+            category_id: this.state.value,
+            author_id: this.state.author_id
+        };
+        await agent.Quotes.create(myObject);
     }
 
     render() {
-        console.log(this.state)
+        console.log(this.state);
+        const { categories, authors } = this.state;
         return (
             <div>
                 <div><Typography headline3>Цытатник</Typography></div>
                 <div style={{ marginTop: 16 }} class={style.customForm}>
-                    <TextField label="Автор" outlined value={this.state.author}
-                        onInput={e => this.setState({ author: e.target.value })} />
-
+                    {/* <TextField label="Автор" outlined value={this.state.author}
+                        onInput={e => this.setState({ author: e.target.value })} /> */}
+                    <Select outlined hintText="Выберите категорию"
+                        selectedIndex={this.state.author_id}
+                        value={this.state.author}
+                        onChange={(e) => {
+                            this.setState({
+                                author_id: e.target.selectedIndex,
+                                author: e.target.value
+                            });
+                        }}>
+                        {authors !== undefined && authors.map((i) => (
+                            <Select.Item>author + {i}</Select.Item>
+                        ))}
+                    </Select>
                     <hr class="mdc-list-divider" style={{ margin: 24 }} />
                     <TextField textarea={true} label="Введите цытату" value={this.state.quote}
                         onInput={e => this.setState({ quote: e.target.value })} />
@@ -102,7 +74,7 @@ export default class FormComponent extends Component {
                                 category: e.target.value
                             });
                         }}>
-                        {[1, 2, 3, 4, 55, 6].map((i) => (
+                        {categories !== undefined && categories.map((i) => (
                             <Select.Item>opt + {i}</Select.Item>
                         ))}
                     </Select>
@@ -110,7 +82,7 @@ export default class FormComponent extends Component {
                 <div id="output"></div>
                 <p>
                     <Button style={{ background: '#008cff', fontSize: 19, height: 62 }}
-                        raised ripple onClick={this.createQuote}>Добавить</Button>
+                        raised ripple onClick={() => this.createQ()}>Добавить</Button>
                 </p>
             </div>
         )
